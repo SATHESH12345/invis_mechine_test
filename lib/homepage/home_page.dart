@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:invis_project/data_model/data_model.dart';
 import 'package:invis_project/details_page.dart/details_page.dart';
-import 'package:invis_project/details_page.dart/search_input.dart';
+import 'package:invis_project/homepage/search_input.dart';
 import 'package:invis_project/logic/data_controller.dart';
 
 class MyHomePage extends StatelessWidget {
@@ -26,21 +26,27 @@ class MyHomePage extends StatelessWidget {
             height: 10,
           ),
           Obx(() {
-            if (dataCtr.getDataStatus.value == ServerRes.load) {
+            if (dataCtr.getDataStatus.value == GetDataRes.load) {
               return const Expanded(
                   child: Center(
                 child: CircularProgressIndicator(),
               ));
-            } else if (dataCtr.getDataStatus.value == ServerRes.failed) {
+            } else if (dataCtr.getDataStatus.value == GetDataRes.failed) {
               return const Expanded(
                   child: Center(
                 child: Text("Failed to load data"),
               ));
             } else if (dataCtr.getDataStatus.value ==
-                ServerRes.locationDataFail) {
+                GetDataRes.locationDataFail) {
               return const Expanded(
                   child: Center(
                 child: Text("No any Data Match your location"),
+              ));
+            } else if (dataCtr.getDataStatus.value ==
+                GetDataRes.searchdataNotFound) {
+              return const Expanded(
+                  child: Center(
+                child: Text("Search data not Found"),
               ));
             }
             return Expanded(

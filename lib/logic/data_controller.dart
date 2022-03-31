@@ -3,12 +3,12 @@ import 'package:invis_project/api_service/fetch_data.dart';
 import 'package:invis_project/data_model/data_model.dart';
 import 'package:invis_project/logic/helper_functions.dart';
 
-enum ServerRes { failed, get, load, locationDataFail }
+enum GetDataRes { failed, get, load, locationDataFail,searchdataNotFound }
 
 class DataController extends GetxController {
   var dataModel = <DataModel>[].obs;
 
-  var getDataStatus = ServerRes.load.obs;
+  var getDataStatus = GetDataRes.load.obs;
   var singleData = DataModel().obs;
   //permanently sore data
   late List<DataModel> storeData;
@@ -42,18 +42,18 @@ class DataController extends GetxController {
         if (datas != null && datas.isNotEmpty) {
           dataModel.value = datas;
           storeData = datas;
-          getDataStatus.value = ServerRes.get;
+          getDataStatus.value = GetDataRes.get;
         } else {
           //According to the user distance if data is not available
-          getDataStatus.value = ServerRes.locationDataFail;
+          getDataStatus.value = GetDataRes.locationDataFail;
         }
       } else {
         //not get data from Api
-        getDataStatus.value = ServerRes.failed;
+        getDataStatus.value = GetDataRes.failed;
       }
     } else {
       //not get data from Api
-      getDataStatus.value = ServerRes.failed;
+      getDataStatus.value = GetDataRes.failed;
     }
     super.onInit();
   }
