@@ -7,7 +7,6 @@ class SplashScreen extends StatelessWidget {
   const SplashScreen({Key? key}) : super(key: key);
   gotoHome() {
     Future.delayed(const Duration(seconds: 4), () {
-      Get.to(MyHomePage());
       Get.offAll(() => MyHomePage());
     });
   }

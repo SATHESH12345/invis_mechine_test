@@ -1,9 +1,11 @@
+import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:invis_project/api_service/fetch_data.dart';
 import 'package:invis_project/data_model/data_model.dart';
 import 'package:invis_project/logic/helper_functions.dart';
 
-enum GetDataRes { failed, get, load, locationDataFail,searchdataNotFound }
+enum GetDataRes { failed, get, load, locationDataFail, searchdataNotFound }
 
 class DataController extends GetxController {
   var dataModel = <DataModel>[].obs;
@@ -27,33 +29,44 @@ class DataController extends GetxController {
 
   @override
   void onInit() async {
-    //fetch data from api
-    var dataModelList = await ApiService.fetchData();
+    bool isLocationServiceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (isLocationServiceEnabled) {
+      //fetch data from api
+      var dataModelList = await ApiService.fetchData();
 
-    if (dataModelList != null && dataModelList.isNotEmpty) {
-      // insert distance in to got data
-      List<DataModel>? data =
-          await HelperFunction.insertDistanceInModel(dataModelList);
-      if (data != null) {
-        //filter by kilometers
-        List<DataModel>? datas = HelperFunction.filterByKilometer(
-          data,
-        );
-        if (datas != null && datas.isNotEmpty) {
-          dataModel.value = datas;
-          storeData = datas;
-          getDataStatus.value = GetDataRes.get;
+      if (dataModelList != null && dataModelList.isNotEmpty) {
+        // insert distance in to got data
+        List<DataModel>? data =
+            await HelperFunction.insertDistanceInModel(dataModelList);
+        if (data != null) {
+          //filter by kilometers
+          List<DataModel>? datas = HelperFunction.filterByKilometer(
+            data,
+          );
+          if (datas != null && datas.isNotEmpty) {
+            dataModel.value = datas;
+            storeData = datas;
+            getDataStatus.value = GetDataRes.get;
+          } else {
+            //According to the user distance if data is not available
+            getDataStatus.value = GetDataRes.locationDataFail;
+          }
         } else {
-          //According to the user distance if data is not available
-          getDataStatus.value = GetDataRes.locationDataFail;
+          //not get data from Api
+          getDataStatus.value = GetDataRes.failed;
         }
       } else {
         //not get data from Api
         getDataStatus.value = GetDataRes.failed;
       }
     } else {
-      //not get data from Api
-      getDataStatus.value = GetDataRes.failed;
+      Get.snackbar(
+        "Enable Device Location",
+        "Device loation not enabled ! Please ",
+        icon: Icon(Icons.person, color: Colors.white),
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      getDataStatus.value = GetDataRes.locationDataFail;
     }
     super.onInit();
   }
