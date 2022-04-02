@@ -1,4 +1,3 @@
-
 class DataModel {
   double? distance;
   String? name;
